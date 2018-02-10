@@ -1,20 +1,20 @@
 {
     "author": "Douglas Beal",
-    "libraries": [
-        {
-            "identifier": "Functions.js"
-        },
-        {
-            "identifier": "ApplicationLib.js"
-        }        
-    ],
-    "identifier": "com.foolscap.OmniGraffle",
+    "identifier": "org.foolscap.OmniGraffle",
     "version": "1.0",
     "description": "Generate foolscap website visualization in OmniGraffle.",
+    "libraries": [
+        {
+            "identifier": "ApplicationLib"
+        },
+        {
+            "identifier": "Functions"
+        }        
+    ],    
     "actions": [
         {
-            "image": "favicon.ico",
-            "identifier": "foolscap_sitemap_auto"
+            "image": "favicon.png",
+            "identifier": "jsonToGraffle"
         }
     ],
     "defaultLocale": "en"
