@@ -1,3 +1,5 @@
+// -*- esversion: 6; -*-
+
 /*
         with open(self.filename, 'w') as output:
             i = "    "
@@ -63,23 +65,82 @@ var _ = function(){
         this.Functions.readDataFile(function(json){
             console.log("readDataFile callback");
             Document.makeNewAndShow(function(doc){
-                cnvs = doc.windows[0].selection.canvas;
-                cnvs.canvasSizingMode = CanvasSizingMode.Fit;
-                cnvs.name = "Foolscap Website";
+                canvas = doc.windows[0].selection.canvas;
+                canvas.canvasSizingMode = CanvasSizingMode.Fit;
+                canvas.layoutInfo.automaticLayout = false;
+                canvas.name = "Foolscap Website";
+                grouped_items = {};
+                groups = {};
+                // create items
                 for (let link of json) {
-                    var url_from = link['url_from'];
+                    var url = link['url_from'];
                     var url_to = link['url_to'];
                     var text = link['text'];
                     if (!text || 0 === text.length) {
                         text = " ";
                     }
-                    console.log(JSON.stringify(link));
-                    console.log( link + " " + text + " " + url_from + " " + url_to + " " );
-                    break;
+                    //console.log(JSON.stringify(link));
+
+                    if ( !(url in grouped_items) ) {
+                        grouped_items[url] = [];
+                    }
+                    item = canvas.newShape();
+                    item.shape = 'RoundRect';
+                    item.text = text;
+                    item.geometry = new Rect(0, 0, 100, 50);
+
+                    fitTextFontToShapeSize(item);
+                    item.setUserData('url', url);
+                    item.setUserData('url_to', url_to);
+                    grouped_items[url].push(item);
+
                 }
-                
+                var x = 0;
+                var y = 0;
+                var dx = 102;
+                var dy = 52;
+                // create groups
+                for (let group_url in grouped_items) {
+                    let items = grouped_items[group_url];
+                    let group = new Group(items);
+                    group.setUserData('url', group_url);
+                    groups[group_url] = group;
+
+
+
+                }
+
+
+
+                //console.log(groups);
+                // create links
+                for (let group_url in grouped_items) {
+                    for (let item of grouped_items[group_url]) {
+                        let url = item.userData['url'];
+                        let url_to = item.userData['url_to'];
+                        // remove anchor
+                        if (url_to.includes('#')) {
+                            url_to = url_to.split('#')[0];
+                        }
+                        let to_group = groups[url_to];
+                        if( to_group ) {
+                            canvas.connect(item, to_group);
+                        } else {
+                            console.log("failed to look up " + url_to + " for " + url);
+                        }
+
+                        // layout
+                        item.geometry.origin = new Point(x, y);
+                        x = x + dx;
+
+                    }
+                    y = y + dy;
+                    
+                }
+                canvas.layout();
+
             }); //Document.makeNewAndShow
-        }); //readDataFile 
+        }); //readDataFile
     }); // PlugIn.Action
 
     // routine determines if menu item is enabled
