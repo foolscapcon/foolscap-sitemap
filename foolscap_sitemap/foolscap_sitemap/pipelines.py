@@ -29,7 +29,7 @@ class FoolscapSitemapPipeline(object):
     def process_item(self, item, spider):
         if not item['url_from'] in self.groups:
             self.groups[item['url_from']] = []
-        self.groups[item['url_from']].append( {
+        self.groups[item['url_from']].append({
             "url": item['url_to'],
             "text": item['text']
         })

@@ -17,8 +17,12 @@ class FoolscapSpider(CrawlSpider):
     def parse_items(self, response):
         for link in LinkExtractor(allow=self.allowed_domains, deny=()).extract_links(response):
             item = FoolscapSitemapItem()
+
             item['url_from'] = response.url
             item['url_to'] = link.url
-            item['text'] = link.text
+            if not link.text:
+                path = '//a[contains(@href, "{0}")]/@class'.format(link.url)
+                item['text'] = " ".join(response.selector.xpath(path).extract())
+            else:
+                item['text'] = link.text
             yield item
-
