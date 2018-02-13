@@ -15,7 +15,7 @@ class FoolscapSitemapPipeline(object):
         return cls(crawler.settings)
 
     def __init__(self, settings):
-        self.filename = "{0}_auto.js".format(settings['BOT_NAME'])
+        self.filename = "{0}_grouped.json".format(settings['BOT_NAME'])
 
     def open_spider(self, spider):
         self.groups = {}

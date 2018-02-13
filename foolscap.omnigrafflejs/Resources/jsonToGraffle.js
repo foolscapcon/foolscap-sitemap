@@ -71,6 +71,7 @@ var _ = function(){
                 canvas.name = "Foolscap Website";
                 grouped_items = {};
                 groups = {};
+                layers = {};
                 // create items
                 for (let link of json) {
                     var url = link['url_from'];
@@ -84,9 +85,15 @@ var _ = function(){
                     if ( !(url in grouped_items) ) {
                         grouped_items[url] = [];
                     }
-                    item = canvas.newShape();
+                    if ( !(url in layers) ) {
+                        layers[url] = canvas.newLayer();
+                        layer.name = url;
+                    }
+                    layer = layers[url];
+                    item = layer.newShape();
                     item.shape = 'RoundRect';
                     item.text = text;
+                    item.name = text
                     item.geometry = new Rect(0, 0, 100, 50);
 
                     fitTextFontToShapeSize(item);
@@ -99,7 +106,7 @@ var _ = function(){
                 var y = 0;
                 var dx = 102;
                 var dy = 52;
-                // create groups
+                // create layers and groups
                 for (let group_url in grouped_items) {
                     let items = grouped_items[group_url];
                     let group = new Group(items);
@@ -137,7 +144,7 @@ var _ = function(){
                     y = y + dy;
                     
                 }
-                canvas.layout();
+                //canvas.layout();
 
             }); //Document.makeNewAndShow
         }); //readDataFile
