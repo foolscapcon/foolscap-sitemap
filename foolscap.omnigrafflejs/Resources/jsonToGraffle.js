@@ -20,11 +20,19 @@ var _ = function(){
                 grouped_items = {};
                 groups = {};
                 layers = {};
+
+                let x = 0;
+                let y = 0;
+                let xsize = 100;                
+                let dx = xsize + 2;
+                let ysize = 50;
+                let dy = ysize + 2;
+                
                 // create items
                 for (let link of json) {
-                    var url = link['url_from'];
-                    var url_to = link['url_to'];
-                    var text = link['text'];
+                    let url = link['url_from'];
+                    let url_to = link['url_to'];
+                    let text = link['text'];
                     if (!text || 0 === text.length) {
                         text = " ";
                     }
@@ -44,7 +52,7 @@ var _ = function(){
                     item.shape = 'RoundRect';
                     item.text = text;
                     item.name = text;
-                    item.geometry = new Rect(0, 0, 100, 50);
+                    item.geometry = new Rect(0, 0, xsize, ysize);
 
                     fitTextFontToShapeSize(item);
                     item.setUserData('url', url);
@@ -52,10 +60,10 @@ var _ = function(){
                     grouped_items[url].push(item);
 
                 }
-                var x = 0;
-                var y = 0;
-                var dx = 102;
-                var dy = 52;
+
+
+
+                
                 // create layers and groups
                 for (let group_url in grouped_items) {
                     let items = grouped_items[group_url];
@@ -82,13 +90,17 @@ var _ = function(){
                         let to_group = groups[url_to];
                         if( to_group ) {
                             let line = canvas.connect(item, to_group);
+                            line.lineType = LineType.Straight;
+                            line.headType = "FilledArrow";
+                            line.tailType = "CrowBall";
+                            
                             lineAndGroup.push(line);
                         } else {
                             console.log("failed to look up " + url_to + " for " + url);
                         }
 
                         // layout
-                        item.geometry.origin = new Point(x, y);
+                        item.geometry = new Rect(x, y, xsize, ysize);
                         x = x + dx;
                         
                     }
