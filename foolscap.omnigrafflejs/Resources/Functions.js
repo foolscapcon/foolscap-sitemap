@@ -1,5 +1,4 @@
 var _ = function() {
-    console.log("foolscap Functions library");
     var Functions = new PlugIn.Library(new Version("1.0"));
 
     Functions.fitTextFontToShapeSize = function(g) {
@@ -41,6 +40,15 @@ var _ = function() {
             console.log( typeof json );
 	    dataCallback(json);
 	});
+    };
+
+    Functions.urlToName = function(url){ 
+        var split = url.split('/');
+        var name = split.slice(-1)[0];
+        if (name.length === 0) {
+            name = split.slice(-2)[0];
+        }
+        return name;       
     };
 
     Functions.handlers = function(){
