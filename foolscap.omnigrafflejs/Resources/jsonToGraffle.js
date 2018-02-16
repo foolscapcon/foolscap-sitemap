@@ -33,15 +33,17 @@ var _ = function(){
                     if ( !(url in grouped_items) ) {
                         grouped_items[url] = [];
                     }
-                    if ( !(url in layers) ) {
-                        layers[url] = canvas.newLayer();
-                        layer.name = url;
-                    }
+                    // if ( !(url in layers) ) {
+                    //     layers[url] = canvas.newLayer();
+                    //     layers[url].name = urlToName(url);
+
+                    // }
                     layer = layers[url];
-                    item = layer.newShape();
+                    //item = layer.newShape();
+                    item = canvas.newShape();
                     item.shape = 'RoundRect';
                     item.text = text;
-                    item.name = text
+                    item.name = text;
                     item.geometry = new Rect(0, 0, 100, 50);
 
                     fitTextFontToShapeSize(item);
@@ -57,19 +59,19 @@ var _ = function(){
                 // create layers and groups
                 for (let group_url in grouped_items) {
                     let items = grouped_items[group_url];
+                    canvas.layoutGraphics(items);
                     let group = new Group(items);
+                    group.name = urlToName(group_url);
                     group.setUserData('url', group_url);
                     groups[group_url] = group;
-
-
-
                 }
 
-
-
-                //console.log(groups);
-                // create links
+                var subgraphs = [];
+                // create links, group with originating group
                 for (let group_url in grouped_items) {
+                    let group = groups[group_url];
+                    var lineAndGroup = [];                    
+                    lineAndGroup.push(group);
                     for (let item of grouped_items[group_url]) {
                         let url = item.userData['url'];
                         let url_to = item.userData['url_to'];
@@ -79,7 +81,8 @@ var _ = function(){
                         }
                         let to_group = groups[url_to];
                         if( to_group ) {
-                            canvas.connect(item, to_group);
+                            let line = canvas.connect(item, to_group);
+                            lineAndGroup.push(line);
                         } else {
                             console.log("failed to look up " + url_to + " for " + url);
                         }
@@ -87,12 +90,17 @@ var _ = function(){
                         // layout
                         item.geometry.origin = new Point(x, y);
                         x = x + dx;
-
+                        
                     }
+                    var subgraph = new Subgraph(lineAndGroup);
+                    subgraph.name = group.name;
+                    subgraphs.push(subgraph);
+                                     
+                    
                     y = y + dy;
                     
                 }
-                //canvas.layout();
+                canvas.layoutGraphics(subgraphs);
 
             }); //Document.makeNewAndShow
         }); //readDataFile
