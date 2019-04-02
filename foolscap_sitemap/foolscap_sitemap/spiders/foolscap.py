@@ -8,6 +8,7 @@ from foolscap_sitemap.items import FoolscapSitemapItem
 from scrapy.utils.response import get_base_url
 
 import logging
+import os.path as path
 
 class FoolscapSpider(CrawlSpider):
     name = 'foolscap'
@@ -26,6 +27,14 @@ class FoolscapSpider(CrawlSpider):
 
 
     def parse_items(self, response):
+        urlparts = response.url.split("/")
+        filename = urlparts[-1] if urlparts[-1] else urlparts[-2]
+        filename = filename + '.html'
+        logging.info(response.url)
+        logging.info(filename)
+        with open(path.join('site', filename), 'wb') as f:
+            f.write(response.body)
+            return        
         # seperate header, footer
         for section in self.section_names:
             # use lxml xpath
